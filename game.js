@@ -36,7 +36,7 @@ let game = {
     start: function() {
         this.init();
         this.preload(() => {
-            this.run();
+            this.run(); //2
         });
     }
 };
