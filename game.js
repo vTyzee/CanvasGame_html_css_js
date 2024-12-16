@@ -73,6 +73,7 @@ let game = {
         this.collideBlocks();
         this.collidePlatform();
         this.ball.collideWorldBounds();
+        this.platform.collideWorldBounds();
         this.platform.move();
         this.ball.move();
     },
@@ -102,7 +103,8 @@ let game = {
     render() {
         this.ctx.clearRect(0, 0, this.width, this.height)
         this.ctx.drawImage(this.sprites.background, 0, 0);
-        this.ctx.drawImage(this.sprites.ball, 0, 0, this.ball.width, this.ball.height, this.ball.x, this.ball.y, this.ball.width, this.ball.height);
+        this.ctx.drawImage(this.sprites.ball, 0, 0, this.ball.width, this.ball.height,
+            this.ball.x, this.ball.y, this.ball.width, this.ball.height);
         this.ctx.drawImage(this.sprites.platform, this.platform.x, this.platform.y);
         this.renderBlocks();
     },
@@ -162,6 +164,7 @@ game.ball = {
             }
         return false;
     },
+
     collideWorldBounds() {
         let x = this.x + this.dx;
         let y = this.y + this.dy;
@@ -186,16 +189,17 @@ game.ball = {
             this.y = 0;
             this.dy = this.velocity;
         } else if (ballBottom > worldBottom) {
-            console.log('game over');
+            console.log('Game over');
         }
     },
+
     bumpBlock(block) {
         this.dy *= -1;
         block.active = false
     },
     bumpPlatform(platform) {
         if (this.dy > 0) {
-            this.dy *= -1;
+            this.dy = -this.velocity;
             let touchX = this.x + this.width / 2;
             this.dx = this.velocity * platform.getTouchOffset(touchX);
         }
@@ -244,6 +248,18 @@ game.platform = {
         let offset = this.width - diff;
         let result = 2 * offset / this.width;
         return result - 1;
+    },
+
+    collideWorldBounds() {
+        let x = this.x + this.dx;
+        let platformLeft = x;
+        let platformRight = platformLeft + this.width;
+        let worldLeft = 0;
+        let worldRight = game.width;
+
+        if (platformLeft < worldLeft || platformRight > worldRight) {
+            this.dx = 0;
+        }
     }
 };
 
